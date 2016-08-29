@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>画图_房子</title>
+	<meta charset="utf-8">
+</head>
+<body>
+	<canvas id="myCanvas" width="500" height="500">
+
+	</canvas>
+	<script type="text/javascript">
+    //点
+    function Point( x , y ) {
+    	this.x=x;
+    	this.y=y;
+    }
+	//线
+	function Line(p1,p2){
+		this.p1=p1;
+		this.p2=p2;
+		this.length=Math.sqrt(Math.pow((p1.x-p2.x),2)+Math.pow((p1.y-p2.y),2));
+	}
+	//面
+	function Shape(){
+		this.points=[];
+		this.lines=[];
+		this.init();
+	}
+	//初始化，颜色，绘制，获取所有线和点,周长，面积
+	Shape.prototype = {
+		init: function(){
+			if ((typeof this.context)== 'undefined') {
+				var canvas=document.getElementById('myCanvas');
+				this.context=canvas.getContext('2d');
+			}
+		},
+		getColor:function(){
+			var cs=[];
+			for (var i = 0; i < 3; i++) {
+				cs[i]=Math.round(Math.random()*255);
+			}              //颜色是随机的
+			 return 'rgb('+cs.join(',')+')';
+		},
+		draw:function(){
+				var ctx=this.context;
+				ctx.strokeStyle=this.getColor();
+				ctx.beginPath();
+				ctx.moveTo( this.points[0].x,this.points[0].y );
+				for (var i = 0; i < this.points.length; i++) {
+					ctx.lineTo(this.points[i].x,this.points[i].y);
+				}
+				ctx.closePath();
+				ctx.stroke();
+		},
+			getPoint:function(){
+				return this.points;
+			},
+			getLine:function(){
+				if (this.lines.length>0) {
+					return this.lines;
+				}else{
+					var lines=[];
+					if (this.points.length<=0) {
+						return lines;
+					}
+					for (var i = 0; i < this.points.length; i++) {
+						lines[i]= new Line(this.points[i],this.points[i+1]?this.points[i+1]:this.points[0]);
+
+					}
+					this.lines=lines;
+					return lines;
+				}
+			},
+			getArea:function(){
+				var lines=this.getLine();
+				var Perimeter=this.getPerimeter();
+				var p=Perimeter/2;
+				var s=1;
+				for (var i = 0; i < lines.length; i++) {
+					s*=(p-lines[i].length);
+				}
+				if (lines.length<=3) {
+					return Math.sqrt(p*s);
+				}else{
+					return Math.sqrt(s);
+				}
+			},
+			getPerimeter:function(){
+				var lines=this.getLine();
+				var len=0;
+				for (var i = 0; i < lines.length; i++) {
+					len+=lines[i].length;
+				}
+				return len;
+			}
+
+		}
+
+		function Triangle(p1,p2,p3){
+			this.points=[p1,p2,p3];
+		}
+		
+		var p1=new Point(200,200);
+		var p2=new Point(100,300);
+		var p3=new Point(300,300);
+
+    	(function(){
+			var s=new Shape();
+			Triangle.prototype=s;
+			Rect.prototype=s;
+			Sqar.prototype=s;
+		})();
+		
+		var t1=new Triangle(p1,p2,p3);
+		t1.draw();
+
+		function Rect(p1,l,w){
+			var p2=new Point( p1.x+l,p1.y );
+			var p3=new Point( p1.x+l,p1.y+w );
+			var p4=new Point( p1.x,p1.y+w );
+			this.points=[p1,p2,p3,p4];
+		}
+		
+		var t2=new Rect(p2,200,200);
+
+		t2.draw();
+		function Sqar(p1,l){
+			Rect.call( this,p1,l,l );
+		}
+		var t3=new Sqar( p3,100 );
+		t3.draw();
+	</script>
+</body>
+
+</html>

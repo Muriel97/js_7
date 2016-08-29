@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>树型结构</title>
+	<meta charset="utf-8">
+</head>
+<body>
+	<script type="text/javascript">
+		function TreeItem(text,link,icon,sonItems){
+			this.text=text;
+			this.link=link;
+			this.icon=icon;
+			this.sonItems=[];
+		}
+		TreeItem.prototype={
+			attribute:{
+				className:'',
+			},
+			AddSonItem:function(sonItems){
+				this.sonItems.push( sonItems );
+			},
+			getSonItemCount:function(){
+				return this.sonItems.length;
+			},
+			getAllSonItem:function(){
+				return this.sonItems;
+			},
+			showItem:function( parentNode ){
+				var root
+				//判断是否有字节点
+				if (this.sonItems.length<=0) {
+					root=document.createElement("li");
+					if (this.link) {
+						var a=document.createElement("a");
+						a.href=this.link;
+						a.innerHTML=this.text;
+						root.appendChild(a);
+					}else{
+						root.innerHTML=this.text;
+					}
+					
+					parentNode.appendChild(root);
+					return ;     //else不用写了
+				}
+				root=document.createElement("li");
+				root.innerHTML=this.text;
+				var ulnode=document.createElement("ul");
+				root.appendChild(ulnode);
+				for (var i = 0; i < this.sonItems.length; i++) {
+					var si=this.sonItems[i];
+					si.showItem(ulnode);
+				}
+				parentNode.appendChild(root);
+			},
+
+		};
+
+		var root=new TreeItem('root','','');
+		var t1=new TreeItem('t1','','');
+		var t2=new TreeItem('t2','','');
+		var t11=new TreeItem('t11','','');
+		var t12=new TreeItem('t12','','');
+		var t111=new TreeItem('baidu','http://www.baidu.com','');
+
+		t11.AddSonItem( t111 );
+
+		root.AddSonItem( t1 );
+		root.AddSonItem( t2 );
+		
+		t1.AddSonItem( t11 );
+		t1.AddSonItem( t12 );
+		root.showItem( document.body );
+	</script>
+</body>
+
+</html>
